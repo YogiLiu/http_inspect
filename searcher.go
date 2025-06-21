@@ -19,9 +19,11 @@ func init() {
 			cwd = ""
 		}
 		slog.Error("can't load "+dbFile, slog.String("err", msg), slog.String("dir", cwd))
+		os.Exit(1)
 	}
 	searcher, err = xdb.NewWithBuffer(db)
 	if err != nil {
 		slog.Error("can't init ip2region searcher", slog.String("err", err.Error()))
+		os.Exit(1)
 	}
 }

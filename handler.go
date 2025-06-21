@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -66,9 +67,9 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	if value == "" {
-		value = req.RemoteAddr
-		if strings.Contains(value, ":") {
-			value = strings.Split(value, ":")[0]
+		values := req.RemoteAddr
+		if strings.Contains(values, ":") {
+			value = strings.Split(values, ":")[0]
 		}
 	}
 
@@ -87,9 +88,12 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	r := newInfo(ip.String())
 
-	writeRes(w, http.StatusOK, successRes{IP: ip.String(), Info: r})
+	res := successRes{IP: ip.String(), Info: r}
+	slog.Info("success to search", slog.String("info", fmt.Sprintf("%+v", res)))
+	writeRes(w, http.StatusOK, res)
 }
 
 func notFound(w http.ResponseWriter, req *http.Request) {
+	slog.Warn("not found", slog.String("method", req.Method), slog.String("path", req.URL.Path))
 	writeRes(w, http.StatusNotFound, errorRes{Msg: "not found"})
 }
