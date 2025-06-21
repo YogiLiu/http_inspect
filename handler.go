@@ -1,0 +1,95 @@
+package main
+
+import (
+	"log/slog"
+	"net"
+	"net/http"
+	"strings"
+)
+
+type ipInfo struct {
+}
+
+type info struct {
+	Country  string `json:"country"`
+	Region   string `json:"region"`
+	Province string `json:"province"`
+	City     string `json:"city"`
+	ISP      string `json:"isp"`
+}
+
+func newInfo(value string) info {
+	i := info{}
+	r, err := searcher.SearchByStr(value)
+	if err != nil {
+		slog.Error("can't search IP", slog.String("err", err.Error()), slog.String("ip", value))
+		return i
+	}
+	arr := strings.Split(r, "|")
+	if len(arr) != 5 {
+		return i
+	}
+	if arr[0] != "0" {
+		i.Country = arr[0]
+	}
+	if arr[1] != "0" {
+		i.Region = arr[1]
+	}
+	if arr[2] != "0" {
+		i.Province = arr[2]
+	}
+	if arr[3] != "0" {
+		i.City = arr[3]
+	}
+	if arr[4] != "0" {
+		i.ISP = arr[4]
+	}
+	return i
+}
+
+type successRes struct {
+	IP   string `json:"ip"`
+	Info info   `json:"info"`
+}
+
+type errorRes struct {
+	Msg string `json:"msg"`
+}
+
+func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	value := req.Header.Get("X-Real-IP")
+	if value == "" {
+		ips := req.Header.Get("X-Forwarded-For")
+		if ips != "" {
+			arr := strings.Split(ips, ",")
+			value = arr[0]
+		}
+	}
+	if value == "" {
+		value = req.RemoteAddr
+		if strings.Contains(value, ":") {
+			value = strings.Split(value, ":")[0]
+		}
+	}
+
+	ip := net.ParseIP(value)
+	if ip == nil {
+		slog.Warn("invalid IP address", slog.String("ip", value))
+		writeRes(w, http.StatusBadRequest, errorRes{Msg: "invalid IP address: " + value})
+		return
+	}
+
+	if ip.To4() == nil {
+		slog.Warn("IPv6 is not supported yet")
+		writeRes(w, http.StatusBadRequest, errorRes{Msg: "IPv6 is not supported yet, IP: " + ip.String()})
+		return
+	}
+
+	r := newInfo(ip.String())
+
+	writeRes(w, http.StatusOK, successRes{IP: ip.String(), Info: r})
+}
+
+func notFound(w http.ResponseWriter, req *http.Request) {
+	writeRes(w, http.StatusNotFound, errorRes{Msg: "not found"})
+}
