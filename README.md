@@ -1,4 +1,4 @@
-# HTTP Inspect
+# HTTP Inspector
 
 Return Your HTTP Information.
 
