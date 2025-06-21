@@ -61,32 +61,35 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	value := req.URL.Query().Get("ip")
 	if value == "" {
 		value = req.Header.Get("X-Real-IP")
+		if value != "" {
+			slog.Info("found IP from X-Real-IP header", slog.String("ip", value))
+		}
 	} else {
-		slog.Info("detected IP from query", slog.String("ip", value))
+		slog.Info("found IP from query string", slog.String("ip", value))
 	}
 	if value == "" {
 		ips := req.Header.Get("X-Forwarded-For")
 		if ips != "" {
 			arr := strings.Split(ips, ",")
 			value = arr[0]
+			if value != "" {
+				slog.Info("found IP from X-Forwarded-For header", slog.String("ip", value))
+			}
 		}
-	} else {
-		slog.Info("detected IP from X-Real-IP ", slog.String("ip", value))
 	}
 	if value == "" {
 		values := req.RemoteAddr
 		if strings.Contains(values, ":") {
 			value = strings.Split(values, ":")[0]
+			if value != "" {
+				slog.Info("found IP from RemoteAddr", slog.String("ip", value))
+			}
 		}
-	} else {
-		slog.Info("detected IP from X-Forwarded-For", slog.String("ip", value))
 	}
 	if value == "" {
 		slog.Warn("can't detect IP address")
 		writeRes(w, http.StatusBadRequest, errorRes{Msg: "can't detect IP address"})
 		return
-	} else {
-		slog.Info("detected IP from RemoteAddr", slog.String("ip", value))
 	}
 
 	ip := net.ParseIP(value)
