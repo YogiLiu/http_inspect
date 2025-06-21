@@ -8,7 +8,7 @@ Wants=network-online.target
 User=http-inspector
 Type=simple
 WorkingDirectory=/opt/http-inspector
-ExecStart=/opt/http-inspector/http_inspector -addr 5202
+ExecStart=/opt/http-inspector/http_inspector -addr :5202
 
 [Install]
 WantedBy=multi-user.target
