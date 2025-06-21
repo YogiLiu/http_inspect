@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"github.com/oschwald/geoip2-golang"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,12 +20,25 @@ const (
 
 func main() {
 	addr := flag.String("addr", ":8080", "HTTP listen address")
+	dbFile := flag.String("db", "GeoLite2-City.mmdb", "GeoIP2 city database file")
 	flag.Parse()
+
+	db, err := geoip2.Open(*dbFile)
+	if err != nil {
+		slog.Error("can't open GeoIP2 database", slog.String("err", err.Error()), slog.String("db", *dbFile))
+		os.Exit(1)
+	}
+	defer func(db *geoip2.Reader) {
+		err := db.Close()
+		if err != nil {
+			slog.Error("can't close GeoIP2 database", slog.String("err", err.Error()), slog.String("db", *dbFile))
+		}
+	}(db)
 
 	mux := http.NewServeMux()
 
 	// Register routes
-	mux.Handle("GET /{$}", ipInfo{})
+	mux.Handle("GET /{$}", ipInfo{db: db})
 	mux.HandleFunc("/", notFound)
 
 	server := &http.Server{

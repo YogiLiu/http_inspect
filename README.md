@@ -4,7 +4,7 @@ Return Your HTTP Information.
 
 ## IP Data Source
 
-[lionsoul2014/ip2region](https://github.com/lionsoul2014/ip2region)
+[P3TERX/GeoLite.mmdb](https://github.com/P3TERX/GeoLite.mmdb)
 
 ## Deployment Guide
 
@@ -15,8 +15,8 @@ Return Your HTTP Information.
    chown http-inspector:http-inspector /opt/http-inspector
    chmod 750 /opt/http-inspector
    ```
-2. Download the database from [ip2region.xdb](https://github.com/lionsoul2014/ip2region/blob/master/data/ip2region.xdb).
-3. Place it to `/opt/http-inspector/ip2region.xdb`.
+2. Download the database from [ GeoLite2-City.mmdb ](https://github.com/P3TERX/GeoLite.mmdb/releases).
+3. Place it to `/opt/http-inspector/ GeoLite2-City.mmdb`.
 4. Download the executable file [releases](https://github.com/YogiLiu/http_inspector/releases).
 5. Place the executable file to `/opt/http-inspector/http_inspector`.
 6. Download [the systemd service file](https://github.com/YogiLiu/http_inspector/main/http-inspector.service).

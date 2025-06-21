@@ -2,50 +2,51 @@ package main
 
 import (
 	"fmt"
+	"github.com/oschwald/geoip2-golang"
 	"log/slog"
 	"net"
 	"net/http"
 	"strings"
 )
 
-type ipInfo struct {
-}
-
-type info struct {
-	Country  string `json:"country"`
-	Region   string `json:"region"`
-	Province string `json:"province"`
-	City     string `json:"city"`
-	ISP      string `json:"isp"`
-}
-
-func newInfo(value string) info {
+func search(db *geoip2.Reader, ip net.IP) (info, error) {
 	i := info{}
-	r, err := searcher.SearchByStr(value)
+	record, err := db.City(ip)
 	if err != nil {
-		slog.Error("can't search IP", slog.String("err", err.Error()), slog.String("ip", value))
-		return i
+		return i, err
 	}
-	arr := strings.Split(r, "|")
-	if len(arr) != 5 {
-		return i
+	i.City = name(record.City.Names).Filter("en", "zh-CN")
+	i.PostalCode = record.Postal.Code
+	i.Continent.Names = name(record.Continent.Names).Filter("en", "zh-CN")
+	i.Continent.Code = record.Continent.Code
+	for _, s := range record.Subdivisions {
+		i.Subdivisions = append(i.Subdivisions, nameWithIso{
+			Names:   name(s.Names).Filter("en", "zh-CN"),
+			IsoCode: s.IsoCode,
+		})
 	}
-	if arr[0] != "0" {
-		i.Country = arr[0]
-	}
-	if arr[1] != "0" {
-		i.Region = arr[1]
-	}
-	if arr[2] != "0" {
-		i.Province = arr[2]
-	}
-	if arr[3] != "0" {
-		i.City = arr[3]
-	}
-	if arr[4] != "0" {
-		i.ISP = arr[4]
-	}
-	return i
+	i.RepresentedCountry.Names = name(record.RepresentedCountry.Names).Filter("en", "zh-CN")
+	i.RepresentedCountry.IsoCode = record.RepresentedCountry.IsoCode
+	i.RepresentedCountry.IsInEuropeanUnion = record.RepresentedCountry.IsInEuropeanUnion
+	i.Country.Names = name(record.Country.Names).Filter("en", "zh-CN")
+	i.Country.IsoCode = record.Country.IsoCode
+	i.Country.IsInEuropeanUnion = record.Country.IsInEuropeanUnion
+	i.RegisteredCountry.Names = name(record.RegisteredCountry.Names).Filter("en", "zh-CN")
+	i.RegisteredCountry.IsoCode = record.RegisteredCountry.IsoCode
+	i.RegisteredCountry.IsInEuropeanUnion = record.RegisteredCountry.IsInEuropeanUnion
+	i.Location.Latitude = record.Location.Latitude
+	i.Location.Longitude = record.Location.Longitude
+	i.Location.MetroCode = record.Location.MetroCode
+	i.Location.AccuracyRadius = record.Location.AccuracyRadius
+	i.Location.TimeZone = record.Location.TimeZone
+	i.Traits.IsAnonymousProxy = record.Traits.IsAnonymousProxy
+	i.Traits.IsAnycast = record.Traits.IsAnycast
+	i.Traits.IsSatelliteProvider = record.Traits.IsSatelliteProvider
+	return i, nil
+}
+
+type ipInfo struct {
+	db *geoip2.Reader
 }
 
 type successRes struct {
@@ -99,13 +100,12 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if ip.To4() == nil {
-		slog.Warn("IPv6 is not supported yet")
-		writeRes(w, http.StatusBadRequest, errorRes{Msg: "IPv6 is not supported yet, IP: " + ip.String()})
+	r, err := search(i.db, ip)
+	if err != nil {
+		slog.Error("can't search IP", slog.String("err", err.Error()), slog.String("ip", value))
+		writeRes(w, http.StatusNotFound, errorRes{Msg: "can't find IP: " + value})
 		return
 	}
-
-	r := newInfo(ip.String())
 
 	res := successRes{IP: ip.String(), Info: r}
 	slog.Info("success to search", slog.String("info", fmt.Sprintf("%+v", res)))
