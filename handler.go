@@ -50,8 +50,13 @@ type ipInfo struct {
 }
 
 type successRes struct {
-	IP   string `json:"ip"`
-	Info info   `json:"info"`
+	IP            string `json:"ip"`
+	Version       int8   `json:"version"`
+	IsPrivate     bool   `json:"isPrivate"`
+	IsLoopback    bool   `json:"isLoopback"`
+	IsMutilcast   bool   `json:"isMutilcast"`
+	IsUnspecified bool   `json:"isUnspecified"`
+	GeoInfo       info   `json:"geoInfo"`
 }
 
 type errorRes struct {
@@ -107,7 +112,24 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	res := successRes{IP: ip.String(), Info: r}
+	var version int8
+	if ip.To4() != nil {
+		version = 4
+	} else if ip.To16() != nil {
+		version = 6
+	} else {
+		version = 0
+	}
+
+	res := successRes{
+		IP:            ip.String(),
+		Version:       version,
+		IsPrivate:     ip.IsPrivate(),
+		IsLoopback:    ip.IsLoopback(),
+		IsMutilcast:   ip.IsMulticast(),
+		IsUnspecified: ip.IsUnspecified(),
+		GeoInfo:       r,
+	}
 	slog.Info("success to search", slog.String("info", fmt.Sprintf("%+v", res)))
 	writeRes(w, http.StatusOK, res)
 }
