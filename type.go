@@ -22,15 +22,14 @@ type continent struct {
 	Code  string `json:"code"`
 }
 
-type representedCountry struct {
-	nameWithIso
-	Type              string `json:"type"`
-	IsInEuropeanUnion bool   `json:"IsInEuropeanUnion"`
-}
-
 type country struct {
 	nameWithIso
-	IsInEuropeanUnion bool `json:"IsInEuropeanUnion"`
+	IsInEuropeanUnion bool `json:"isInEuropeanUnion"`
+}
+
+type representedCountry struct {
+	country
+	Type string `json:"type"`
 }
 
 type info struct {
