@@ -33,13 +33,13 @@ type representedCountry struct {
 }
 
 type info struct {
+	Continent          continent          `json:"continent"`
+	Country            country            `json:"country"`
+	RepresentedCountry representedCountry `json:"representedCountry"`
+	RegisteredCountry  country            `json:"registeredCountry"`
+	Subdivisions       []nameWithIso      `json:"subdivisions"`
 	City               name               `json:"city"`
 	PostalCode         string             `json:"postalCode"`
-	Continent          continent          `json:"continent"`
-	Subdivisions       []nameWithIso      `json:"subdivisions"`
-	RepresentedCountry representedCountry `json:"representedCountry"`
-	Country            country            `json:"country"`
-	RegisteredCountry  country            `json:"registeredCountry"`
 	Location           struct {
 		TimeZone       string  `json:"timeZone"`
 		Latitude       float64 `json:"latitude"`
