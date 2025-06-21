@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,6 +18,9 @@ const (
 )
 
 func main() {
+	addr := flag.String("addr", ":8080", "HTTP listen address")
+	flag.Parse()
+
 	mux := http.NewServeMux()
 
 	// Register routes
@@ -24,7 +28,7 @@ func main() {
 	mux.HandleFunc("/", notFound)
 
 	server := &http.Server{
-		Addr:        ":8080",
+		Addr:        *addr,
 		Handler:     mux,
 		ReadTimeout: httpReadTimeout,
 	}
