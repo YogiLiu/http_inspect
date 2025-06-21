@@ -7,6 +7,8 @@ func (n name) Filter(codes ...string) map[string]string {
 	for _, code := range codes {
 		if v, ok := n[code]; ok {
 			m[code] = v
+		} else {
+			m[code] = ""
 		}
 	}
 	return m
