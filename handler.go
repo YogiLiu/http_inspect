@@ -26,15 +26,15 @@ func search(db *geoip2.Reader, ip net.IP) (info, error) {
 			IsoCode: s.IsoCode,
 		})
 	}
-	i.RepresentedCountry.Names = name(record.RepresentedCountry.Names).Filter("en", "zh-CN")
-	i.RepresentedCountry.IsoCode = record.RepresentedCountry.IsoCode
-	i.RepresentedCountry.IsInEuropeanUnion = record.RepresentedCountry.IsInEuropeanUnion
-	i.Country.Names = name(record.Country.Names).Filter("en", "zh-CN")
-	i.Country.IsoCode = record.Country.IsoCode
-	i.Country.IsInEuropeanUnion = record.Country.IsInEuropeanUnion
-	i.RegisteredCountry.Names = name(record.RegisteredCountry.Names).Filter("en", "zh-CN")
-	i.RegisteredCountry.IsoCode = record.RegisteredCountry.IsoCode
-	i.RegisteredCountry.IsInEuropeanUnion = record.RegisteredCountry.IsInEuropeanUnion
+	i.RepresentedRegion.Names = name(record.RepresentedCountry.Names).Filter("en", "zh-CN")
+	i.RepresentedRegion.IsoCode = record.RepresentedCountry.IsoCode
+	i.RepresentedRegion.IsInEuropeanUnion = record.RepresentedCountry.IsInEuropeanUnion
+	i.Region.Names = name(record.Country.Names).Filter("en", "zh-CN")
+	i.Region.IsoCode = record.Country.IsoCode
+	i.Region.IsInEuropeanUnion = record.Country.IsInEuropeanUnion
+	i.RegisteredRegion.Names = name(record.RegisteredCountry.Names).Filter("en", "zh-CN")
+	i.RegisteredRegion.IsoCode = record.RegisteredCountry.IsoCode
+	i.RegisteredRegion.IsInEuropeanUnion = record.RegisteredCountry.IsInEuropeanUnion
 	i.Location.Latitude = record.Location.Latitude
 	i.Location.Longitude = record.Location.Longitude
 	i.Location.MetroCode = record.Location.MetroCode

@@ -22,19 +22,19 @@ type continent struct {
 	Code  string `json:"code"`
 }
 
-type country struct {
+type retion struct {
 	nameWithIso
 	IsInEuropeanUnion bool `json:"isInEuropeanUnion"`
 }
 
-type representedCountry struct {
-	country
+type representedRegion struct {
+	retion
 	Type string `json:"type"`
 }
 
 type info struct {
 	Continent    continent     `json:"continent"`
-	Country      country       `json:"country"`
+	Region       retion        `json:"region"`
 	Subdivisions []nameWithIso `json:"subdivisions"`
 	City         name          `json:"city"`
 	Location     struct {
@@ -44,10 +44,10 @@ type info struct {
 		MetroCode      uint    `json:"metroCode"`
 		AccuracyRadius uint16  `json:"accuracyRadius"`
 	} `json:"location"`
-	PostalCode         string             `json:"postalCode"`
-	RepresentedCountry representedCountry `json:"representedCountry"`
-	RegisteredCountry  country            `json:"registeredCountry"`
-	Traits             struct {
+	PostalCode        string            `json:"postalCode"`
+	RepresentedRegion representedRegion `json:"representedRegion"`
+	RegisteredRegion  retion            `json:"registeredRegion"`
+	Traits            struct {
 		IsAnonymousProxy    bool `json:"isAnonymousProxy"`
 		IsAnycast           bool `json:"isAnycast"`
 		IsSatelliteProvider bool `json:"isSatelliteProvider"`
