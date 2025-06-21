@@ -19,6 +19,7 @@ func search(db *geoip2.Reader, ip net.IP) (info, error) {
 	i.PostalCode = record.Postal.Code
 	i.Continent.Names = name(record.Continent.Names).Filter("en", "zh-CN")
 	i.Continent.Code = record.Continent.Code
+	i.Subdivisions = make([]nameWithIso, 1)
 	for _, s := range record.Subdivisions {
 		i.Subdivisions = append(i.Subdivisions, nameWithIso{
 			Names:   name(s.Names).Filter("en", "zh-CN"),
