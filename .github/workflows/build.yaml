@@ -23,4 +23,4 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        path: ./http-inspector
+        path: ./http_inspector
