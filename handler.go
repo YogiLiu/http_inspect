@@ -85,11 +85,10 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if value == "" {
 		values := req.RemoteAddr
-		if strings.Contains(values, ":") {
-			value = strings.Split(values, ":")[0]
-			if value != "" {
-				slog.Info("found IP from RemoteAddr", slog.String("ip", value))
-			}
+		v, _, err := net.SplitHostPort(values)
+		if err == nil {
+			slog.Info("found IP from RemoteAddr", slog.String("ip", v))
+			value = v
 		}
 	}
 	if value == "" {
