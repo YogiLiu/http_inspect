@@ -4,7 +4,7 @@
 
 # project
 ip2region.xdb
-http_inspect
+http_inspector
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,linux,macos,go
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,macos,go

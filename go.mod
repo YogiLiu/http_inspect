@@ -1,4 +1,4 @@
-module github.com/YogiLiu/http_inspect
+module github.com/YogiLiu/http_inspector
 
 go 1.24.4
 

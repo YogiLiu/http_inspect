@@ -1,0 +1,14 @@
+[Unit]
+Description=Return Your HTTP Information.
+Documentation=https://github.com/YogiLiu/http-inspector
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+User=http-inspector
+Type=simple
+WorkingDirectory=/opt/http-inspector
+ExecStart=/opt/http-inspector/http_inspector -addr 5202
+
+[Install]
+WantedBy=multi-user.target
