@@ -55,7 +55,7 @@ type successRes struct {
 	Version       int8   `json:"version"`
 	IsPrivate     bool   `json:"isPrivate"`
 	IsLoopback    bool   `json:"isLoopback"`
-	IsMutilcast   bool   `json:"isMutilcast"`
+	IsMulticast   bool   `json:"isMulticast"`
 	IsUnspecified bool   `json:"isUnspecified"`
 	GeoInfo       info   `json:"geoInfo"`
 }
@@ -126,7 +126,7 @@ func (i ipInfo) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		Version:       version,
 		IsPrivate:     ip.IsPrivate(),
 		IsLoopback:    ip.IsLoopback(),
-		IsMutilcast:   ip.IsMulticast(),
+		IsMulticast:   ip.IsMulticast(),
 		IsUnspecified: ip.IsUnspecified(),
 		GeoInfo:       r,
 	}
